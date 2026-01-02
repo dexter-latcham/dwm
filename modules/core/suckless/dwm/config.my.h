@@ -31,7 +31,7 @@ static char *colors[][3] = {
  };
 
 static const char *const autostart[] = {
-	"dwmblocks", NULL,
+	"sh", "-c", "killall dwmblocks;dwmblocks",NULL,
 	NULL /* terminate */
 };
 

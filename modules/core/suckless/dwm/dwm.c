@@ -528,7 +528,7 @@ buttonpress(XEvent *e)
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
 		else if (ev->x > selmon->ww - statusw - getsystraywidth()) {
-			x = selmon->ww - statusw;
+			x = selmon->ww - statusw - getsystraywidth();
 			click = ClkStatusText;
 
 			char *text, *s, ch;
@@ -1193,7 +1193,7 @@ getstatusbarpid()
 				return statuspid;
 		}
 	}
-	if (!(fp = popen("pidof -s "STATUSBAR, "r")))
+	if (!(fp = popen("pgrep -o "STATUSBAR, "r")))
 		return -1;
 	fgets(buf, sizeof(buf), fp);
 	pclose(fp);

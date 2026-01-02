@@ -4,6 +4,7 @@
 - barpadding
 - systray
 - status2d
+- statuscmd
 - xresources
 
 ## Patches to be applied
