@@ -6,12 +6,12 @@
 - status2d
 - statuscmd
 - xresources
+- steam
+- hide vacant tags
 
 ## Patches to be applied
-- hide vacant tags
 - scratchpad
 - fullscreen
 - single tagset
 - vanity gaps
 - swallow
-- steam
