@@ -8,10 +8,10 @@
 - xresources
 - steam
 - hide vacant tags
+- swallow
 
 ## Patches to be applied
 - scratchpad
 - fullscreen
 - single tagset
 - vanity gaps
-- swallow
