@@ -11,6 +11,7 @@
 - swallow
 - scratchpad
 - fullscreen
+- pertag
 
 ## Patches to be applied
 - single tagset
