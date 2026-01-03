@@ -5,6 +5,7 @@ pkgs.mkShell {
     xorg.libXinerama
     xorg.libXft
     xorg.libxcb
+    imlib2
     fontconfig
     freetype
     pkg-config
