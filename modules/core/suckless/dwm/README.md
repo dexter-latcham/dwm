@@ -12,8 +12,8 @@
 - scratchpad
 - fullscreen
 - pertag
+- vanity gaps
 
 ## Patches to be applied
 - single tagset
-- vanity gaps
 - hot reload

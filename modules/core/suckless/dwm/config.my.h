@@ -6,6 +6,13 @@
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 
+//vanity gaps
+static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 10;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 10;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 10;       /* vert outer gap between windows and screen edge */
+static const int smartgaps          = 1;        /* 1 means no outer gap when there is only one window */
+
 //tag previews
 static const int scalepreview       = 4;        /* preview scaling (display w and h / scalepreview) */
 static const int previewbar         = 1;        /* show the bar in the preview window */
@@ -155,6 +162,17 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_Right, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_Left,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_Right, tagmon,         {.i = +1 } },
+
+
+	{ MODKEY,                       XK_z,  	  incrgaps,       {.i = +1 } },
+	{ MODKEY,                       XK_x,  	  incrgaps,       {.i = -1 } },
+	{ MODKEY,                       XK_a,  	  togglegaps,     {0}},
+	{ MODKEY|ShiftMask,             XK_a,  	  defaultgaps,    {0}},
+
+
+
+
+
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
