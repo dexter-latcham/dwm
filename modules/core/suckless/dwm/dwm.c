@@ -1031,6 +1031,7 @@ int
 drawstatusbar(Monitor *m, int bh, char* stext) {
 	int ret, i, j, w, x, len;
 	short isCode = 0;
+	short disableCode = 0;
 	char *text;
 	char *p;
 
@@ -1045,11 +1046,21 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
 			text[j++] = stext[i];
 	text[j] = '\0';
 
+	int codeCount =0;
+	for(int i=0;text[i];i++){
+		if(text[i]=='^'){
+			codeCount++;
+		}
+	}
+	if(codeCount % 2 !=0){
+		disableCode = 1;
+	}
+
 	/* compute width of the status text */
 	w = 0;
 	i = -1;
 	while (text[++i]) {
-		if (text[i] == '^') {
+		if (text[i] == '^' && !disableCode) {
 			if (!isCode) {
 				isCode = 1;
 				text[i] = '\0';
@@ -1083,7 +1094,7 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
 	/* process status text */
 	i = -1;
 	while (text[++i]) {
-		if (text[i] == '^' && !isCode) {
+		if (text[i] == '^' && !isCode && !disableCode) {
 			isCode = 1;
 
 			text[i] = '\0';
@@ -1100,6 +1111,12 @@ drawstatusbar(Monitor *m, int bh, char* stext) {
 					buf[7] = '\0';
 					drw_clr_create(drw, &drw->scheme[ColFg], buf);
 					i += 7;
+				} else if (text[i] == 'C') {
+					int c = atoi(text + ++i);
+					drw_clr_create(drw, &drw->scheme[ColFg], termcolor[c]);
+				} else if (text[i] == 'B') {
+					int c = atoi(text + ++i);
+					drw_clr_create(drw, &drw->scheme[ColBg], termcolor[c]);
 				} else if (text[i] == 'b') {
 					char buf[8];
 					memcpy(buf, (char*)text+i+1, 7);
