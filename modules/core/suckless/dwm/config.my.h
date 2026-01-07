@@ -1,5 +1,4 @@
 #define TERMINAL "st"
-#define TERMINAL "st"
 #define TERMCLASS "St"
 
 /* appearance */
