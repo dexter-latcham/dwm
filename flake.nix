@@ -1,6 +1,6 @@
 {
   description = "Dexter's build of the DWM window manager";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   outputs = { self, nixpkgs }: {
     nixosModules.default = { pkgs, ... }: {
       services.xserver.windowManager.dwm.package = 
