@@ -155,7 +155,7 @@
 	          else
               pkgs.dwm.overrideAttrs (old: {
                 src = self;
-      		      buildInputs = oldAttrs.buildInputs ++ [ self.libxcb self.libxinerama self.imlib2];
+      		      buildInputs = old.buildInputs ++ [ self.libxcb self.libxinerama self.imlib2];
       		      postPatch = ''
       		      cp config.my.h config.h
       		      cp ${keybindFile} keybinds.h
