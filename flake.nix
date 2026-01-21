@@ -9,7 +9,7 @@
     {
       nixosModules.default = { pkgs, ... }: {
         services.xserver.windowManager.dwm.package = 
-          self.packages.${pkgs.system}.default;
+          self.packages.${pkgs.stdenv.hostPlatform.system}.default;
       };
       packages = forAllSystems (system: 
         let
