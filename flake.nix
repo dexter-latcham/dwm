@@ -9,11 +9,10 @@
     {
       nixosModules.default = { pkgs, ... }: {
         services.xserver.windowManager.dwm.package = 
-          self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          self.packages.${pkgs.stdenv.hostPlatform.system}.default { inherit pkgs; };
       };
-      packages = forAllSystems (system: 
+      packages = forAllSystems (system { pkgs }: 
         let
-          pkgs = import nixpkgs { inherit system; };
           lib = pkgs.lib;
 
 	        pwrMgrScript = pkgs.writeShellApplication {
