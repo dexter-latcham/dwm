@@ -11,7 +11,8 @@
         services.xserver.windowManager.dwm.package = 
           self.packages.${pkgs.stdenv.hostPlatform.system}.default { inherit pkgs; };
       };
-      packages = forAllSystems (system { pkgs }: 
+      packages = forAllSystems (system : {
+        default = { pkgs }: 
         let
           lib = pkgs.lib;
 
@@ -147,19 +148,17 @@
           '';
 	        keybindFile = pkgs.writeText "keybinds.h" keybindsH;
         in
-        {
-          default = 
-	          if builtins.length keyPairs != builtins.length (lib.unique keyPairs) then
-  	          throw "Duplicate keybinds detected"
-	          else
-              pkgs.dwm.overrideAttrs (old: {
-                src = self;
-      		      buildInputs = old.buildInputs ++ [ pkgs.libxcb pkgs.libxinerama pkgs.imlib2];
-      		      postPatch = ''
-      		      cp config.my.h config.h
-      		      cp ${keybindFile} keybinds.h
-      		      '';
-              });
+	        if builtins.length keyPairs != builtins.length (lib.unique keyPairs) then
+  	        throw "Duplicate keybinds detected"
+	        else
+            pkgs.dwm.overrideAttrs (old: {
+              src = self;
+      		    buildInputs = old.buildInputs ++ [ pkgs.libxcb pkgs.libxinerama pkgs.imlib2];
+      		    postPatch = ''
+      		    cp config.my.h config.h
+      		    cp ${keybindFile} keybinds.h
+      		    '';
+            });
         });
       defaultPackage = forAllSystems (system:
         self.packages.${system}.default
