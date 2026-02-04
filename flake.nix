@@ -17,19 +17,9 @@
           appKeybinds = lib.mkOption {
             type = lib.types.listOf (lib.types.submodule {
               options = {
-                mod = lib.mkOption {
-                  type = lib.types.str;
-                  default = "MODKEY";
-                  description = "Modifier mask";
-                };
-                key = lib.mkOption {
-                  type = lib.types.str;
-                  description = "Key";
-                };
-                app = lib.mkOption {
-                  type = lib.types.str;
-                  description = "Application to spawn";
-                };
+                mod = lib.mkOption { type = lib.types.str; default = "MODKEY"; };
+                key = lib.mkOption { type = lib.types.str; };
+                app = lib.mkOption { type = lib.types.str; };
               };
             });
             default = [];
@@ -74,7 +64,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_space,  zoom,      		 {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 
-	{ MODKEY,                       XK_b,      togglebar,      {0} },
+	{ MODKEY|ShiftMask,             XK_x,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
 
