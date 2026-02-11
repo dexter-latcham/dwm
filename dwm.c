@@ -1252,6 +1252,7 @@ drawbars(void)
 
 	for (m = mons; m; m = m->next)
 		drawbar(m);
+	updatesystray();
 }
 
 void
@@ -1281,8 +1282,8 @@ expose(XEvent *e)
 
 	if (ev->count == 0 && (m = wintomon(ev->window))) {
 		drawbar(m);
-		if (m == selmon)
-			updatesystray();
+		// if (m == selmon)
+		updatesystray();
 	}
 }
 
