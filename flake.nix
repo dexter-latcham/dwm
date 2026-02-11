@@ -49,6 +49,7 @@
           '';
           formattedBinds = pkgs.lib.concatStringsSep "\n" (map makeKeybind appKeybinds);
           keybindFile = pkgs.writeText "keybinds.h" ''
+#include "selfrestart.c"
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,			          				XK_d,      spawn,          {.v = dmenucmd } },
@@ -88,6 +89,7 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_x,  	  incrgaps,       {.i = -1 } },
 	{ MODKEY,                       XK_a,  	  togglegaps,     {0}},
 	{ MODKEY|ShiftMask,             XK_a,  	  defaultgaps,    {0}},
+  { MODKEY|ShiftMask,             XK_q,     self_restart,   {0}}, 
   ${formattedBinds}
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)

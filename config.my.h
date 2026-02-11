@@ -107,7 +107,7 @@ ResourcePref resources[] = {
 		{ "color15",         STRING,  &termcol15 },
 };
 static const char *const autostart[] = {
-	"sh", "-c", "killall dwmblocks;dwmblocks",NULL,
+	// "sh", "-c", "killall dwmblocks;dwmblocks",NULL,
 	NULL /* terminate */
 };
 
