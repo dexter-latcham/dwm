@@ -57,8 +57,8 @@
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
-#define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
-                               * MAX(0, MIN((y)+(h),(m)->wy+(m)->wh) - MAX((y),(m)->wy)))
+#define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->mx+(m)->mw) - MAX((x),(m)->mx)) \
+                               * MAX(0, MIN((y)+(h),(m)->my+(m)->mh) - MAX((y),(m)->my)))
 #define ISVISIBLE(C)            ((C->tags & C->mon->tagset[C->mon->seltags]))
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
@@ -84,7 +84,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeAlt}; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -646,8 +646,10 @@ buttonpress(XEvent *e)
 	if (ev->window == selmon->barwin) {
 		i = x = 0;
 		unsigned int occ = 0;
-		for(c = m->clients; c; c=c->next)
-			occ |= c->tags == TAGMASK ? 0 : c->tags;
+		for(Monitor* mm = mons; mm; mm = mm->next){
+			for(c = mm->clients; c; c=c->next)
+				occ |= c->tags == TAGMASK ? 0 : c->tags;
+			}
 		do {
 			/* Do not reserve space for vacant tags */
 			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
@@ -1177,7 +1179,7 @@ drawbar(Monitor *m)
 	int x, w, tw = 0, stw = 0;
 	int boxs = drw->fonts->h / 9;
 	int boxw = drw->fonts->h / 6 + 2;
-	unsigned int i, occ = 0, urg = 0;
+	unsigned int i, occ = 0, urg = 0, sel=0;
 	Client *c;
 
 	if (!m->showbar)
@@ -1192,18 +1194,37 @@ drawbar(Monitor *m)
 	}
 
 	resizebarwin(m);
-	for (c = m->clients; c; c = c->next) {
-		occ |= c->tags == TAGMASK ? 0 : c->tags;
-		if (c->isurgent)
-			urg |= c->tags;
+	for (Monitor* mm = mons; mm; mm = mm->next) {
+		for (c = mm->clients; c; c = c->next) {
+			if(c->tags != TAGMASK){
+				occ |= c->tags;
+			}
+			// occ |= c->tags == TAGMASK ? 0 : c->tags;
+			if (c->isurgent)
+				urg |= c->tags;
+		}
 	}
+
+	for (c = m->clients; c; c = c->next) {
+		if (c->tags != TAGMASK){
+			sel |= c->tags;
+		}
+	};
 	x = 0;
 	for (i = 0; i < LENGTH(tags); i++) {
 		/* Do not draw vacant tags */
 		if(!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
 			continue;
 		w = TEXTW(tags[i]);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+		if(m->tagset[m->seltags] & 1 <<i){
+			drw_setscheme(drw,scheme[SchemeSel]);
+		} else if (occ & 1 << i && !(sel & 1<<i)){
+			drw_setscheme(drw, scheme[SchemeAlt]);
+		}else{
+			drw_setscheme(drw, scheme[SchemeNorm]);
+		}
+		// drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+
 		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
 		x += w;
 	}
@@ -1673,18 +1694,25 @@ motionnotify(XEvent *e)
 	Monitor *m;
 	XMotionEvent *ev = &e->xmotion;
 	unsigned int i, x;
-
+	unsigned int occ =0;
 	if (ev->window == selmon->barwin) {
+		for(Monitor* mm = mons; mm;mm=mm->next){
+			for(Client* c = mm->clients; c; c=c->next){
+				if( c->tags != TAGMASK){
+					occ |= c->tags;
+				}
+			}
+		}
 		i = x = 0;
-		do
+		do{
+			if (!(occ & 1<<i || selmon->tagset[selmon->seltags] & 1<<i)){
+				continue;
+			}
 			x += TEXTW(tags[i]);
-		while (ev->x >= x && ++i < LENGTH(tags));
-	/* FIXME when hovering the mouse over the tags and we view the tag,
-	 *       the preview window get's in the preview shot */
-
-	     	if (i < LENGTH(tags)) {
+		} while (ev->x >= x && ++i < LENGTH(tags));
+	  if (i < LENGTH(tags)) {
 			if (selmon->previewshow != (i + 1)
-			&& !(selmon->tagset[selmon->seltags] & 1 << i)) {
+				&& !(selmon->tagset[selmon->seltags] & 1 << i)){
 				selmon->previewshow = i + 1;
 				showtagpreview(i);
 			} else if (selmon->tagset[selmon->seltags] & 1 << i) {
@@ -1702,7 +1730,6 @@ motionnotify(XEvent *e)
 		selmon->previewshow = 0;
 		XUnmapWindow(dpy, selmon->tagwin);
 	}
-
 	if (ev->window != root)
 		return;
 	if ((m = recttomon(ev->x_root, ev->y_root, 1, 1)) != mon && mon) {
@@ -2283,14 +2310,34 @@ setmfact(const Arg *arg)
 void
 showtagpreview(unsigned int i)
 {
-	if (!selmon->previewshow || !selmon->tagmap[i]) {
+	if (!selmon->previewshow) {
 		XUnmapWindow(dpy, selmon->tagwin);
 		return;
 	}
 
-	XSetWindowBackgroundPixmap(dpy, selmon->tagwin, selmon->tagmap[i]);
-	XCopyArea(dpy, selmon->tagmap[i], selmon->tagwin, drw->gc, 0, 0,
-			selmon->mw / scalepreview, selmon->mh / scalepreview,
+	/* find the monitor that currently has this tag */
+	Monitor *m;
+	for (m = mons; m; m = m->next) {
+		Client *c;
+		for (c = m->clients; c; c = c->next) {
+			if (c->tags & (1 << i)) {
+				break;
+			}
+		}
+		if (c)
+			break;
+	}
+
+	/* if no monitor currently has the tag, hide the preview */
+	if (!m || !m->tagmap[i]) {
+		XUnmapWindow(dpy, selmon->tagwin);
+		return;
+	}
+
+	XMoveResizeWindow(dpy, selmon->tagwin, selmon->wx,selmon->wy,m->mw/scalepreview, m->mh/scalepreview);
+	XSetWindowBackgroundPixmap(dpy, selmon->tagwin, m->tagmap[i]);
+	XCopyArea(dpy, m->tagmap[i], selmon->tagwin, drw->gc, 0, 0,
+			m->mw / scalepreview, m->mh / scalepreview,
 			0, 0);
 	XSync(dpy, False);
 	XMapRaised(dpy, selmon->tagwin);

@@ -4,7 +4,8 @@
   outputs = { self, nixpkgs }:
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: 
+        f (import nixpkgs {inherit system;}));
     in
     {
       nixosModules.default = { lib, pkgs, config, ... }:
@@ -28,7 +29,7 @@
         };
         config = lib.mkIf cfg.enable {
           services.xserver.windowManager.dwm = {
-            enable = true;
+            enable = lib.mkDefault true;
             package = self.packages.${pkgs.stdenv.hostPlatform.system}.default {
               inherit pkgs;
               appKeybinds = cfg.appKeybinds;
@@ -39,9 +40,7 @@
           };
         };
       };
-      packages = forAllSystems (system: let
-        pkgs = import nixpkgs {inherit system;}; 
-      in {
+      packages = forAllSystems (pkgs: {
         default = { pkgs, appKeybinds ? [] }: 
         let
           makeKeybind = kb: ''

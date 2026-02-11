@@ -14,7 +14,7 @@ static const int smartgaps          = 1;        /* 1 means no outer gap when the
 
 //tag previews
 static const int scalepreview       = 4;        /* preview scaling (display w and h / scalepreview) */
-static const int previewbar         = 1;        /* show the bar in the preview window */
+static const int previewbar         = 0;        /* show the bar in the preview window */
 
 
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
@@ -38,6 +38,7 @@ static char normfgcolor[]           = "#bbbbbb";
 static char selfgcolor[]            = "#eeeeee";
 static char selbordercolor[]        = "#005577";
 static char selbgcolor[]            = "#005577";
+static char selaltcolor[]            = "#775577";
 
 static char termcol0[] = "#000000"; /* black   */
 static char termcol1[] = "#ff0000"; /* red     */
@@ -77,6 +78,7 @@ static char *colors[][3] = {
        /*               fg           bg           border   */
        [SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
        [SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
+       [SchemeAlt]  = { selaltcolor,  normbgcolor,  selbordercolor  },
  };
 
 /*
@@ -89,6 +91,7 @@ ResourcePref resources[] = {
 		{ "color4",        STRING,  &normfgcolor },
 		{ "color0",         STRING,  &selfgcolor },
 		{ "color4",         STRING,  &selbgcolor },
+		{ "color5",         STRING,  &selaltcolor },
 		{ "color0",         STRING,  &termcol0 },
 		{ "color1",         STRING,  &termcol1 },
 		{ "color2",         STRING,  &termcol2 },
