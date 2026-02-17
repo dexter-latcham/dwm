@@ -5,7 +5,7 @@
     let
       systems = [ "x86_64-linux" "aarch64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: 
-        f (import nixpkgs {inherit system;}));
+        f (import nixpkgs {hostPlatform=system;}));
     in
     {
       nixosModules.default = { lib, pkgs, config, ... }:
@@ -111,8 +111,8 @@ static const Key keys[] = {
       		  '';
           });
         });
-      defaultPackage = forAllSystems (system:
-        self.packages.${system}.default
+      defaultPackage = forAllSystems (pkgs:
+        self.packages.${pkgs.stdenv.hostPlatform.system}.default
       );
     };
 }
